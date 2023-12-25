@@ -23,8 +23,11 @@ public class MemesParser {
             Elements elements = document.select("div.col-left.col-left-margin > *");
             Elements imgElements = elements.select("img");
 
-            for (var element : imgElements)
-                srcMemes.add(element.attr("src"));
+            for (var element : imgElements) {
+                String src = element.attr("src");
+                if (src.endsWith("png") || src.endsWith("jpg"))
+                    srcMemes.add(src);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

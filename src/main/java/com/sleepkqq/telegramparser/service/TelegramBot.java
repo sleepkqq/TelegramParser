@@ -1,7 +1,6 @@
 package com.sleepkqq.telegramparser.service;
 
 import com.sleepkqq.telegramparser.config.BotConfig;
-import com.sleepkqq.telegramparser.service.upload.YoutubeUpload;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +16,6 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,11 +26,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private final BotConfig config;
     @Autowired
-    private VideoCreatorAPI videoCreatorAPI;
-    @Autowired
-    private VideoOperations videoOperations;
-    @Autowired
-    private YoutubeUpload youTubeUpload;
+    private VideoEditor videoEditor;
     @Autowired
     private MemesParser memesParser;
     @Value("${channel.name}")
@@ -59,10 +50,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         System.out.println(update.getMessage().getText());
     }
 
-    @Scheduled(initialDelay = 5 * 1000, fixedRate = 3 * 60 * 1000)
-    private void uploadMeme() {
-        System.out.println("-".repeat(200));
-        log.info("Начало процесса создания и публикации контента");
+    @Scheduled(cron = "0 30 * * * *")
+    private void uploadMemeTelegram() {
         try {
             if (srcMemes == null) {
                 log.info("srcMemes is null");
@@ -71,13 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             String srcMeme = srcMemes.get(0);
             srcMemes.remove(0);
-
-            double imageRatio = getImageAspectRatio(srcMeme);
-            imageRatio = imageRatio > 0.75 ? imageRatio - (imageRatio - 0.75) * 2 : imageRatio;
-
-
-            String link = videoCreatorAPI.createVideo(srcMeme, imageRatio);
-            videoOperations.downloadVideo(link);
 
             SendPhoto sendPhoto = new SendPhoto(CHANNEL_NAME, new InputFile(srcMeme));
             sendPhoto.setCaption("t.me/test_channel_sduhfsiudhf");
@@ -88,26 +70,19 @@ public class TelegramBot extends TelegramLongPollingBot {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("-".repeat(200));
     }
 
-    private static double getImageAspectRatio(String imageUrl) throws IOException {
-        URL url = new URL(imageUrl);
-        BufferedImage image = ImageIO.read(url);
-
-        int width = image.getWidth();
-        int height = image.getHeight();
-
-        return (double) width / height;
-    }
-
-    @Scheduled(fixedRate = 18 * 60 * 1000)
+    @Scheduled(cron = "0 0 4 * * *")
     private void updateMemesDB() {
         srcMemes = memesParser.downloadNewMemes();
 
-        System.out.println("-".repeat(200));
         log.info("Успешно обновлен список srcMemes");
-        System.out.println("-".repeat(200));
+
+        for (int i = 0; i < 10; i++) {
+            System.out.println("-".repeat(200));
+            videoEditor.generateVideo("10min.mp4" , srcMemes.get(i));
+            System.out.println("-".repeat(200));
+        }
     }
 
     @Override

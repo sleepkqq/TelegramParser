@@ -13,7 +13,8 @@ public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String url;
-    private int duration;
+    private String fileName;
+    private int begin;
+    private VideoType videoType;
 
 }
