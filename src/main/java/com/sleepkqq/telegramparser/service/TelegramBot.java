@@ -32,6 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Value("${channel.name}")
     private String CHANNEL_NAME;
     private static List<String> srcMemes;
+    private static int memeNumber;
 
     public TelegramBot(BotConfig config) {
         this.config = config;
@@ -50,7 +51,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         System.out.println(update.getMessage().getText());
     }
 
-    @Scheduled(cron = "0 30 * * * *")
+    @Scheduled(cron = "0 0 * * * *")
     private void uploadMemeTelegram() {
         try {
             if (srcMemes == null) {
@@ -58,11 +59,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                 return;
             }
 
-            String srcMeme = srcMemes.get(0);
-            srcMemes.remove(0);
+            String srcMeme = srcMemes.get(memeNumber);
+            memeNumber++;
 
             SendPhoto sendPhoto = new SendPhoto(CHANNEL_NAME, new InputFile(srcMeme));
-            sendPhoto.setCaption("t.me/test_channel_sduhfsiudhf");
+            sendPhoto.setCaption("@memes_every_day");
 
             execute(sendPhoto);
             log.info("Опубликован новый пост в Телеграм");
@@ -72,9 +73,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 
-    @Scheduled(cron = "0 0 4 * * *")
+    @Scheduled(cron = "0 10 4 * * *")
     private void updateMemesDB() {
         srcMemes = memesParser.downloadNewMemes();
+        memeNumber = 0;
 
         log.info("Успешно обновлен список srcMemes");
 

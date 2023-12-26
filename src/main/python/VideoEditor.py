@@ -16,7 +16,7 @@ def overlay_audio_and_image(video_file, video_begin, audio_file, image, path):
     image_clip = ImageClip(image_array, duration=video_clip.duration, transparent=True)
     resized_image_clip = image_clip.resize(width=900, height=1000)
 
-    video_clip = video_clip.set_audio(CompositeAudioClip([video_clip.audio, audio_clip]))
+    video_clip = video_clip.set_audio(audio_clip)
 
     sub_image_clip = ImageClip(path + 'subscribe.png', duration=video_clip.duration, transparent=True)
 
