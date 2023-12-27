@@ -14,7 +14,7 @@ def overlay_audio_and_image(video_file, video_begin, audio_file, image, path):
     image_array = imageio.imread(image)
 
     image_clip = ImageClip(image_array, duration=video_clip.duration, transparent=True)
-    resized_image_clip = image_clip.resize(width=900, height=1000)
+    resized_image_clip = image_clip.resize(width=750, height=750)
 
     video_clip = video_clip.set_audio(audio_clip)
 
