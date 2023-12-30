@@ -49,6 +49,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         System.out.println(update.getMessage().getText());
+        updateMemesAndCreateVideos();
     }
 
     @Scheduled(cron = "0 0 * * * *")
@@ -74,15 +75,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     @Scheduled(cron = "0 10 4 * * *")
-    private void updateMemesDB() {
+    private void updateMemesAndCreateVideos() {
         srcMemes = memesParser.downloadNewMemes();
         memeNumber = 0;
 
         log.info("Успешно обновлен список srcMemes");
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 1; i++) {
             System.out.println("-".repeat(200));
-            videoEditor.generateVideo("10min.mp4" , srcMemes.get(i));
+            videoEditor.generateVideo("sample.mp4" , srcMemes.get(i));
             System.out.println("-".repeat(200));
         }
     }

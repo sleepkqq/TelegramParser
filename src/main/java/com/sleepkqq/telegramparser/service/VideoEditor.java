@@ -24,9 +24,9 @@ public class VideoEditor {
     private AudioRepository audioRepository;
     @Autowired
     private VideoRepository videoRepository;
-    @Value("${video.path}")
+    @Value("${path.videos}")
     private String DIRECTORY_PATH;
-    @Value("${video.path.idea}")
+    @Value("${path.idea}")
     private String IDEA_DIRECTORY_PATH;
 
     public void generateVideo(String videoFileName, String srcMeme) {
